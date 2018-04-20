@@ -55,7 +55,6 @@ def process(df):
     return df
 
 
-
 def iter_treaties():
     base_soup = get_soup(BASE + START_PAGE)
     for chapter_link in base_soup(links_containing('Treaties.aspx')):
@@ -63,7 +62,10 @@ def iter_treaties():
         treaty_links = chapter_soup(links_containing('Details.aspx'))
         for link in treaty_links:
             treaty_url = BASE + link['href']
-            yield process(make_df(treaty_url))
+            try:
+                yield process(make_df(treaty_url))
+            except ValueError:   # Page without table
+                continue
 
 
 if __name__ == '__main__':
