@@ -22,9 +22,32 @@ def links_containing(text):
     return filter
 
 
+def read_header_treaty(url):
+    """Read the treaty information before the tables 
+    containing the ratifications of the countries"""
+    treaty_soup = get_soup(url)
+    headerInfos = {}
+    fields = dict(
+        entryForce='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptEIF_ctl00_tcText',
+        registration='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptRegistration_ctl00_tcText',
+        status='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptStatus_ctl00_tcText',
+        pdf='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptText_ctl00_tcText',
+        Treaty='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcTreaty',
+        Chapter='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptHead_ctl00_tcText',
+        Date='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcText',
+        )
+    for field, id_ in fields.items():
+        field_text = treaty_soup.find(id=id_)
+        if field_text:
+            #print(field, ':\t', field_text) # Patrick debug             
+            #print(field, ':\t', field_text.text.strip()) # Patrick debug 
+            #print(field, ':\t', field_text.text.strip().split('\n')[-1].strip())
+            headerInfos[field] = re.sub( '\s+', ' ', field_text.text).strip()
+    return headerInfos
+    
 def make_df(url):
     """Make a data frame from a treaty URL."""
-    print(url)
+    print('parsed URL: ', url)
     treaty_soup = get_soup(url)
 
     # Parse the table of countries
@@ -32,15 +55,17 @@ def make_df(url):
         return (tag.name == 'div' and
                 'table-responsive' in tag.get('class', ''))
     tables = [str(t) for t in treaty_soup.find_all(resp_table_div)]
-    for table in tables:
+    for idx, table in enumerate(tables):
+        print('table #{}'.format(idx))
         try:
             df = pd.read_html(table, header=[0] if 'thead' in table else None)[0]
         except ValueError:  # Not a table after all
             continue
         if 'Participant' in df.columns:
             break
-    else:
-        print('Found no Participant-table!')
+        else:
+            print('table #{}: Found no Participant-table!'.format(idx))
+
 
     # Get stuff from the top of the page
     fields = dict(
@@ -56,7 +81,10 @@ def make_df(url):
         print(field)
         field_text = treaty_soup.find(id=id_)
         if field_text:
-            df[field] = field_text.text.strip().split('\n')[-1].strip()
+            print(field, ':\t', field_text) # Patrick debug             
+            print(field, ':\t', field_text.text.strip()) # Patrick debug 
+            df[field] = re.sub( '\s+', ' ', field_text.text).strip()
+            print(field, ':\t', field_text.text.strip().split('\n')[-1].strip())
 
     # Get notes from bottom table
     #   TODO
