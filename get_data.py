@@ -5,6 +5,7 @@ import sys
 import bs4
 import pandas as pd
 import requests
+import pycountry
 
 BASE = 'https://treaties.un.org/Pages/'
 START_PAGE = 'ParticipationStatus.aspx?clang=_en'
@@ -63,6 +64,7 @@ def make_df(url):
             continue
         if 'Participant' in df.columns:
             break
+<<<<<<< HEAD
         else:
             print('table #{}: Found no Participant-table!'.format(idx))
 
@@ -76,6 +78,27 @@ def make_df(url):
         Treaty='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcTreaty',
         Chapter='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptHead_ctl00_tcText',
         Date='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcText',
+=======
+    else:
+        print('Found no Participant-table!')
+        return
+
+    # Some Participant-only tables get interpreted weirdly by pandas
+    # Ex: https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=I-4&chapter=1&clang=_en
+    if all(df.Participant.isnull()):
+        countries_list = df.columns.tolist()
+        countries_list = countries_list[countries_list.index('Participant') + 1:]
+        df = pd.DataFrame(dict(Participant=countries_list))
+
+    # Normalize country names
+    df.Participant = _normalize_country_names(df.Participant)
+
+    # Get stuff from the top of the page
+    fields = dict(
+        Treaty='treatyCenter',
+        Chapter='tcTextCenter',
+        TreatyPlaceAndDate='treatyCenterSub',
+>>>>>>> 5ca3837b53d8cc6475350ffc96a319dde7b51646
         )
     for field, id_ in fields.items():
         print(field)
@@ -86,16 +109,26 @@ def make_df(url):
             df[field] = re.sub( '\s+', ' ', field_text.text).strip()
             print(field, ':\t', field_text.text.strip().split('\n')[-1].strip())
 
+    # Split PlaceAndDate
+    df['TreatyPlace'], _, df['TreatyDate'] = zip(*[[x.strip() for x in d.partition(',')]
+                                                   for _, d in df['TreatyPlaceAndDate'].iteritems()])
+
     # Get notes from bottom table
     #   TODO
 
+
+
     # Try to convert date fields
-    date_fields = ['ratification', 'accession', 'signature']
+    date_fields = ['ratification', 'accession', 'signature', 'succesion',
+                   'application', 'adoption', 'registration date']
     for field in df.columns:
         if isinstance(field, int):
             continue
-        if any([f in field.lower() for f in date_fields]):
-            df[field] = _convert_date(df[field])
+        is_date_field = [f for f in date_fields if f in field.lower()]
+        if is_date_field:
+            # df[field] = _convert_date(df[field])
+            df['ActionDate'] = _convert_date(df[field])
+            df['ActionType'] = is_date_field[0].title()
 
     # Other useful stuff
     df['URL'] = url
@@ -104,7 +137,7 @@ def make_df(url):
 
 
 def _convert_date(data_s):
-    re_date = re.compile('(\d\d? (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec) \d{4})',
+    re_date = re.compile('(\d\d? (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w* \d{4})',
                          flags=re.IGNORECASE)
     data_l = list()
     for _, row in data_s.iteritems():
@@ -112,6 +145,28 @@ def _convert_date(data_s):
         data_l.append(match.group() if match else 'nan')
 
     return pd.to_datetime(pd.Series(data_l))
+
+
+def _normalize_country_names(countries):
+    pattern = re.compile(r'[,0-9)(\[\]]')   # Only keep letters and spaces
+    normalized = list()
+
+    for country in countries:
+        try:
+            country_name = pattern.sub('', country).strip()
+        except TypeError:
+            normalized.append('No country')
+            continue
+
+        try:
+            codes = pycountry.countries.lookup(country_name)
+            normalized.append(codes.alpha_3)
+        except LookupError:
+            # TODO: Do a second more manual search through pycountry
+            normalized.append(country_name)
+
+    return pd.Series(normalized)
+
 
 def process(df):
     return df
@@ -138,5 +193,21 @@ if __name__ == '__main__':
         df = make_df(url)
         import IPython; IPython.embed()
     except IndexError:
-        for df in iter_treaties():  # itertools.islice(iter_treaties(), 5):
-            print(df.head())
+
+        #  df_list = [df for df in itertools.islice(iter_treaties(), 250) if df is not None]
+        #  df_list = [df for df in iter_treaties() if df is not None]
+
+        df_list = list()
+        for i, df in enumerate(iter_treaties()):
+            print(i)
+            if df is not None:
+                df_list.append(df)
+
+            if not i % 10:
+                print('Saving!')
+                df = pd.concat(df_list)
+                df.to_csv(f'un_treaties_{i:04d}.csv')
+
+        df = pd.concat(df_list)
+        df.to_csv('un_treaties.csv')
+        import IPython; IPython.embed()
