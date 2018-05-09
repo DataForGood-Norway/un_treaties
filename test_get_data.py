@@ -18,7 +18,7 @@ class TestGetData(unittest.TestCase):
             pdf='United Nations, Treaty Series , vol. 12, p. 179.',
             Treaty='1. Protocol amending the Agreements, Conventions and Protocols on Narcotic Drugs, concluded at The Hague on 23 January 1912, at Geneva on 11 February 1925 and 19 February 1925, and 13 July 1931, at Bangkok on 27 November 1931 and at Geneva on 26 June 1936',
             Chapter='NARCOTIC DRUGS AND PSYCHOTROPIC SUBSTANCES',
-            Date='Lake Success, New York, 11 December 1946'
+            TreatyPlaceAndDate='Lake Success, New York, 11 December 1946'
         )
         self.assertCountEqual(get_data.read_header_treaty(self.url).keys(),
                               self.output.keys())
@@ -36,7 +36,7 @@ class TestGetData(unittest.TestCase):
             pdf='United Nations, Treaty Series, vol. 557, p. 143.',
             Treaty='5. a Amendments to Articles 23, 27 and 61 of the Charter of the United Nations, adopted by the General Assembly of the United Nations in resolutions 1991 A and B (XVIII) of 17 December 1963',
             Chapter='CHARTER OF THE UNITED NATIONS AND STATUTE OF THE INTERNATIONAL COURT OF JUSTICE',
-            Date='New York, 17 December 1963 1'
+            TreatyPlaceAndDate='New York, 17 December 1963 1'
         )
         print(get_data.read_header_treaty(self.url))
         self.assertDictEqual(get_data.read_header_treaty(self.url),

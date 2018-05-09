@@ -35,7 +35,7 @@ def read_header_treaty(url):
         pdf='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptText_ctl00_tcText',
         Treaty='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcTreaty',
         Chapter='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptHead_ctl00_tcText',
-        Date='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcText',
+        TreatyPlaceAndDate='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcText',
         )
     for field, id_ in fields.items():
         field_text = treaty_soup.find(id=id_)
@@ -60,29 +60,27 @@ def make_df(url):
         print('table #{}'.format(idx))
         try:
             df = pd.read_html(table, header=[0] if 'thead' in table else None)[0]
+            print(df.columns)
         except ValueError:  # Not a table after all
             continue
+        if len(df) == 0:
+            continue
+        
+        #import IPython; IPython.embed()
+        participant_cols = [c for c in df.columns if str(c).lower().startswith('participant')]
+        if participant_cols:
+            if len(participant_cols) > 1:
+                raise ValueError(f"Found more than one participant column: {participant_cols}")
+            df.rename(columns={participant_cols[0]: "Participant"}, inplace=True)
         if 'Participant' in df.columns:
             break
-<<<<<<< HEAD
-        else:
-            print('table #{}: Found no Participant-table!'.format(idx))
-
-
-    # Get stuff from the top of the page
-    fields = dict(
-        entryForce='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptEIF_ctl00_tcText',
-        registration='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptRegistration_ctl00_tcText',
-        status='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptStatus_ctl00_tcText',
-        pdf='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptText_ctl00_tcText',
-        Treaty='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcTreaty',
-        Chapter='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptHead_ctl00_tcText',
-        Date='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptTreaty_ctl00_tcText',
-=======
+            
+    # if no break, do the 'else'
     else:
-        print('Found no Participant-table!')
+        print('table #{}: Found no Participant-table!'.format(idx))
         return
 
+    
     # Some Participant-only tables get interpreted weirdly by pandas
     # Ex: https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=I-4&chapter=1&clang=_en
     if all(df.Participant.isnull()):
@@ -94,24 +92,12 @@ def make_df(url):
     df.Participant = _normalize_country_names(df.Participant)
 
     # Get stuff from the top of the page
-    fields = dict(
-        Treaty='treatyCenter',
-        Chapter='tcTextCenter',
-        TreatyPlaceAndDate='treatyCenterSub',
->>>>>>> 5ca3837b53d8cc6475350ffc96a319dde7b51646
-        )
-    for field, id_ in fields.items():
-        print(field)
-        field_text = treaty_soup.find(id=id_)
-        if field_text:
-            print(field, ':\t', field_text) # Patrick debug             
-            print(field, ':\t', field_text.text.strip()) # Patrick debug 
-            df[field] = re.sub( '\s+', ' ', field_text.text).strip()
-            print(field, ':\t', field_text.text.strip().split('\n')[-1].strip())
+    for field, value in read_header_treaty(url).items():
+        print(field, value)
+        df[field] = value
 
     # Split PlaceAndDate
-    df['TreatyPlace'], _, df['TreatyDate'] = zip(*[[x.strip() for x in d.partition(',')]
-                                                   for _, d in df['TreatyPlaceAndDate'].iteritems()])
+    df['TreatyPlace'], _, df['TreatyDate'] = zip(*[[x.strip() for x in d.partition(',')] for _, d in df['TreatyPlaceAndDate'].iteritems()])
 
     # Get notes from bottom table
     #   TODO
@@ -181,19 +167,19 @@ def iter_treaties():
             treaty_url = BASE + link['href']
             try:
                 yield process(make_df(treaty_url))
-            except KeyError:   # Page without table
+            except KeyError as e:   # Page without table
+                print(e)
                 continue
-            #except ValueError:   # Page without table
+           #except ValueError:   # Page without table
             #    continue
 
 
 if __name__ == '__main__':
-    try:
+    if len(sys.argv) > 1:
         url = sys.argv[1]
         df = make_df(url)
         import IPython; IPython.embed()
-    except IndexError:
-
+    else:
         #  df_list = [df for df in itertools.islice(iter_treaties(), 250) if df is not None]
         #  df_list = [df for df in iter_treaties() if df is not None]
 
