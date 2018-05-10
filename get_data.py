@@ -5,6 +5,7 @@ import sys
 import bs4
 import pandas as pd
 import requests
+import countries
 import pycountry
 
 BASE = 'https://treaties.un.org/Pages/'
@@ -24,7 +25,7 @@ def links_containing(text):
 
 
 def read_header_treaty(url):
-    """Read the treaty information before the tables 
+    """Read the treaty information before the tables
     containing the ratifications of the countries"""
     treaty_soup = get_soup(url)
     headerInfos = {}
@@ -40,12 +41,12 @@ def read_header_treaty(url):
     for field, id_ in fields.items():
         field_text = treaty_soup.find(id=id_)
         if field_text:
-            #print(field, ':\t', field_text) # Patrick debug             
-            #print(field, ':\t', field_text.text.strip()) # Patrick debug 
+            #print(field, ':\t', field_text) # Patrick debug
+            #print(field, ':\t', field_text.text.strip()) # Patrick debug
             #print(field, ':\t', field_text.text.strip().split('\n')[-1].strip())
             headerInfos[field] = re.sub( '\s+', ' ', field_text.text).strip()
     return headerInfos
-    
+
 def make_df(url):
     """Make a data frame from a treaty URL."""
     print('parsed URL: ', url)
@@ -65,7 +66,7 @@ def make_df(url):
             continue
         if len(df) == 0:
             continue
-        
+
         #import IPython; IPython.embed()
         participant_cols = [c for c in df.columns if str(c).lower().startswith('participant')]
         if participant_cols:
@@ -74,13 +75,13 @@ def make_df(url):
             df.rename(columns={participant_cols[0]: "Participant"}, inplace=True)
         if 'Participant' in df.columns:
             break
-            
+
     # if no break, do the 'else'
     else:
         print('table #{}: Found no Participant-table!'.format(idx))
         return
 
-    
+
     # Some Participant-only tables get interpreted weirdly by pandas
     # Ex: https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=I-4&chapter=1&clang=_en
     if all(df.Participant.isnull()):
@@ -133,25 +134,8 @@ def _convert_date(data_s):
     return pd.to_datetime(pd.Series(data_l))
 
 
-def _normalize_country_names(countries):
-    pattern = re.compile(r'[,0-9)(\[\]]')   # Only keep letters and spaces
-    normalized = list()
-
-    for country in countries:
-        try:
-            country_name = pattern.sub('', country).strip()
-        except TypeError:
-            normalized.append('No country')
-            continue
-
-        try:
-            codes = pycountry.countries.lookup(country_name)
-            normalized.append(codes.alpha_3)
-        except LookupError:
-            # TODO: Do a second more manual search through pycountry
-            normalized.append(country_name)
-
-    return pd.Series(normalized)
+def _normalize_country_names(country_list):
+    return pd.Series([countries.normalize(c).alpha_3 for c in country_list])
 
 
 def process(df):
