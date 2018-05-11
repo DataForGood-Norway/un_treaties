@@ -135,7 +135,7 @@ def _convert_date(data_s):
 
 
 def _normalize_country_names(country_list):
-    return pd.Series([countries.normalize(c).alpha_3 for c in country_list])
+    return pd.Series([countries.normalize(c) for c in country_list])
 
 
 def process(df):
@@ -169,6 +169,7 @@ if __name__ == '__main__':
 
         df_list = list()
         for i, df in enumerate(iter_treaties()):
+            print("-"*40)
             print(i)
             if df is not None:
                 df_list.append(df)

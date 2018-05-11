@@ -18,6 +18,12 @@ _COUNTRY_MAPPINGS = {
 }
 
 
+_NON_STATE_PARTICIPANTS = {
+    'world health organization': 'World Health Organization',
+    'european onion': 'European Union'
+}
+
+
 def normalize(country):
 
     # Try to lookup country name as given
@@ -36,7 +42,7 @@ def normalize(country):
         return pycountry.countries.lookup(country_name)
     except LookupError:
         pass
-
+    
     # Yoda, Write Like
     words = country_name.split()
     country_with_comma = f"{words[-1]}, {' '.join(words[:-1])}"
@@ -46,6 +52,15 @@ def normalize(country):
     except LookupError:
         pass
 
+    # "While the EU is an observer, it is party to some 50 international UN agreements as the only non-state participant"
+    # https://en.wikipedia.org/wiki/United_Nations_General_Assembly_observers#European_Union
+    try:
+        mapped_country_name = _NON_STATE_PARTICIPANTS[country_name.lower()]
+        print(f"{country} -> (observer, non-state participant) -> {mapped_country_name} ")
+        return mapped_country_name
+    except KeyError:
+        pass
+    
     # Use manual mapping
     try:
         mapped_country_name = _COUNTRY_MAPPINGS[country_name]
