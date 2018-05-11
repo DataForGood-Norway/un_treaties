@@ -20,7 +20,16 @@ _COUNTRY_MAPPINGS = {
 
 _NON_STATE_PARTICIPANTS = {
     'world health organization': 'World Health Organization',
-    'european onion': 'European Union'
+    'european union': 'European Union',
+    'andean community': 'Andean Community',
+    'caribbean community': 'Caribbean Community',
+    'common market for eastern and southern africa': 'Common Market for Eastern and Southern Africa',
+    'east african community': 'East African Community',
+    'economic community of west african states': 'Economic Community of West African States',
+    'eurasian economic community': 'Eurasian Economic Community',
+    'organization of african unity': 'Organization of African Unity',
+    'southern african development community': 'Southern African Development Community',
+    'west african economic and monetary union': 'West African Economic and Monetary Union',
 }
 
 
