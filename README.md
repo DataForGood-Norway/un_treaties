@@ -1,4 +1,4 @@
-# Visualizing UN Treaties
+# Crawling & Visualizing UN Treaties
 
 [The United Nations Treaty collection](https://treaties.un.org/Pages/ParticipationStatus.aspx?clang=_en) organizes UN treaties per "Chapters" (e.g. `Human Rights`, `Traffic in Persons`, `Law of the Sea`, ...)
 
