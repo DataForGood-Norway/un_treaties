@@ -11,7 +11,7 @@ _Here is the 280-character elevator pitch_
 | Kleng Bråtveit    | @klengbratveit  | Project Lead |              |
 | Dirk Hesse        | @dhesse         |              | Crawler      |
 | Emma Scala        | @makingwaves27  |              | Crawler      |
-| Geir Arne Hjelle  | @gahjelle       |              | Crawler      |
+| Geir Arne Hjelle  | [![](https://avatars3.githubusercontent.com/u/728076?s=64&v=4)@gahjelle](https://github.com/gahjelle)       |              | Crawler      |
 | Harjeet Harpal    | @tanyuu         |              | Crawler      |
 | Patrick Merlot    | @patechoc       |              | Crawler      |
 
