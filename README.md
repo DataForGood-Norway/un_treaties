@@ -1,6 +1,6 @@
 # UN Treaties
 
-_Here is the 280-character elevator pitch_
+_Push countries to ratify UN treaties!_ 
 
 ## Join The Project
 
@@ -32,8 +32,21 @@ See [all tasks](https://github.com/DataForGood-Norway/ResoCrawl/issues?utf8=%E2%
 
 ## What Are We Doing?
 
+This project is mainly split into four parts:
+
++ **Crawler**: Scrape data from the [UN Treaties web site](https://treaties.un.org/Pages/ParticipationStatus.aspx?clang=_en)
+
++ **Data Preparation**: Organize the data into a nice-to-work-with CSV or similar
+
++ **Visualization**: Create visualizations that illustrate the data
+
++ **Impact**: Use the data and visualizations to incentivize more countries to ratify treaties
+
+See [the original project idea](https://github.com/DataForGood-Norway/project-ideas/issues/6) for the initial discussion.
 
 ## Goal
+
+...
 
 
 ## More Information
