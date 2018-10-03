@@ -6,16 +6,18 @@ _Push countries to ratify UN treaties!_
 
 **Meet the team**
 
-|                                                        | Name             | @github                                            | Role         | Working on   |
-|--------------------------------------------------------|------------------|----------------------------------------------------|--------------|--------------|
-| ![Kleng](https://github.com/klengbratveit.png?size=64) | Kleng Bråtveit   | [@klengbratveit](https://github.com/klengbratveit) | Project Lead |              |
-| ![Dirk](https://github.com/dhesse.png?size=64)         | Dirk Hesse       | [@dhesse](https://github.com/dhesse)               |              | Crawler      |
-| ![Emma](https://github.com/makingwaves27.png?size=64)  | Emma Scala       | [@makingwaves27](https://github.com/makingwaves27) |              | Crawler      |
-| ![Geir Arne](https://github.com/gahjelle.png?size=64)  | Geir Arne Hjelle | [@gahjelle](https://github.com/gahjelle)           |              | Crawler      |
-| ![Harjeet](https://github.com/tanyuu.png?size=64)      | Harjeet Harpal   | [@tanyuu](https://github.com/tanyuu)               |              | Crawler      |
-| ![Patrick](https://github.com/patechoc.png?size=64)    | Patrick Merlot   | [@patechoc](https://github.com/patechoc)           |              | Crawler      |
+|       | Name             | @github                    | Role         | Working on     | Season      |
+|-------|------------------|----------------------------|--------------|----------------|-------------|
+| -     | Anastasiia Filchenko | -                      | Developer    | Visualization  | Autumn 2018 | 
+| -     | John Melin       | -                          |  Developer   |  UX/Front-end  | Autumn 2018 |
+| ![Kleng](https://github.com/klengbratveit.png?size=64) | Kleng Bråtveit   | [@klengbratveit](https://github.com/klengbratveit) | Idea provider, Project Lead |  UX    | Spring 2018 |
+| ![Dirk](https://github.com/dhesse.png?size=64)         | Dirk Hesse       | [@dhesse](https://github.com/dhesse)               |          Developer    | Crawler      | Spring 2018 |
+| ![Emma](https://github.com/makingwaves27.png?size=64)  | Emma Scala       | [@makingwaves27](https://github.com/makingwaves27) |         Developer   | Crawler      | Spring 2018 |
+| ![Geir Arne](https://github.com/gahjelle.png?size=64)  | Geir Arne Hjelle | [@gahjelle](https://github.com/gahjelle)           |           Project Lead, Developer   | Crawler, Visualization     | Spring/Autumn 2018 |
+| ![Harjeet](https://github.com/tanyuu.png?size=64)      | Harjeet Harpal   | [@tanyuu](https://github.com/tanyuu)               |          Developer    | Crawler      | Spring 2018 |
+| ![Patrick](https://github.com/patechoc.png?size=64)    | Patrick Merlot   | [@patechoc](https://github.com/patechoc)           |          Developer    | Crawler, Visualization     | Spring/Autumn 2018 |
 
-Join us on [Slack](http://dataforgood.no/contact-us/)
+Join us on [Slack](http://dataforgood.no/contact-us/), then join our [channel](https://dataforgood-norway.slack.com/messages/CA183A89G/).
 
 
 ### We Need Your Help
@@ -46,7 +48,11 @@ See [the original project idea](https://github.com/DataForGood-Norway/project-id
 
 ## Goal
 
-...
+Our goals are:
+
+* to make information about UN Treaties more accessible to people,
+* to incentivize people in power to sign/follow up on treaties.
+
 
 
 ## More Information
