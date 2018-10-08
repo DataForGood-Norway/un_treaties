@@ -41,9 +41,6 @@ def read_header_treaty(url):
     for field, id_ in fields.items():
         field_text = treaty_soup.find(id=id_)
         if field_text:
-            #print(field, ':\t', field_text) # Patrick debug
-            #print(field, ':\t', field_text.text.strip()) # Patrick debug
-            #print(field, ':\t', field_text.text.strip().split('\n')[-1].strip())
             headerInfos[field] = re.sub( '\s+', ' ', field_text.text).strip()
     return headerInfos
 

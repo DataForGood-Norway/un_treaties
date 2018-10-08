@@ -15,7 +15,8 @@ _COUNTRY_MAPPINGS = {
     'Democratic Republic of the Congo': 'Congo, The Democratic Republic of the',
     'Holy See': 'Holy See (Vatican City State)',
     'Libyan Arab Jamahiriya': 'Libya',
-    'Eswatini':'Swaziland'
+    'Eswatini':'Swaziland',
+    'Council of Europe': 'Council of Europe',
 }
 
 
