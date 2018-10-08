@@ -15,12 +15,14 @@ _COUNTRY_MAPPINGS = {
     'Democratic Republic of the Congo': 'Congo, The Democratic Republic of the',
     'Holy See': 'Holy See (Vatican City State)',
     'Libyan Arab Jamahiriya': 'Libya',
+    'Eswatini':'Swaziland'
 }
 
 
 _NON_STATE_PARTICIPANTS = {
     'world health organization': 'World Health Organization',
     'european union': 'European Union',
+    'Council of Europe': 'Council of Europe',
     'andean community': 'Andean Community',
     'caribbean community': 'Caribbean Community',
     'common market for eastern and southern africa': 'Common Market for Eastern and Southern Africa',

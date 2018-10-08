@@ -178,7 +178,9 @@ if __name__ == '__main__':
                 print('Saving!')
                 df = pd.concat(df_list)
                 df.to_csv(f'un_treaties_{i:04d}.csv')
+                df.to_json(orient='records', path_or_buf=f'un_treaties_{i:04d}.json')
 
         df = pd.concat(df_list)
         df.to_csv('un_treaties.csv')
+        df.to_json(orient='records', path_or_buf='un_treaties.json')
         import IPython; IPython.embed()
