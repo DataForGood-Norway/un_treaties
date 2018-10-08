@@ -1,0 +1,52 @@
+# packages in environment at /home/patechoc/anaconda3/envs/un-py36:
+#
+# Name                    Version                   Build  Channel
+asn1crypto                0.24.0                py36_1003    conda-forge
+beautifulsoup4            4.6.3                     <pip>
+blas                      1.0                         mkl  
+bs4                       0.0.1                     <pip>
+ca-certificates           2018.8.24            ha4d7672_0    conda-forge
+certifi                   2018.8.24             py36_1001    conda-forge
+cffi                      1.11.5           py36h5e8e0c9_1    conda-forge
+chardet                   3.0.4                 py36_1003    conda-forge
+cryptography              2.3.1            py36hdffb7b8_0    conda-forge
+cryptography-vectors      2.3.1                 py36_1000    conda-forge
+html5lib                  1.0.1                      py_0    conda-forge
+icu                       58.2                 hfc679d8_0    conda-forge
+idna                      2.7                   py36_1002    conda-forge
+intel-openmp              2019.0                      118  
+libffi                    3.2.1                hfc679d8_5    conda-forge
+libgcc-ng                 7.2.0                hdf63c60_3    conda-forge
+libgfortran-ng            7.2.0                hdf63c60_3    conda-forge
+libiconv                  1.15                 h470a237_3    conda-forge
+libstdcxx-ng              7.2.0                hdf63c60_3    conda-forge
+libxml2                   2.9.8                h422b904_5    conda-forge
+libxslt                   1.1.32               h88dbc4e_2    conda-forge
+lxml                      4.2.5            py36hc9114bc_0    conda-forge
+mkl                       2019.0                      118  
+mkl_fft                   1.0.6                    py36_0    conda-forge
+mkl_random                1.0.1                    py36_0    conda-forge
+ncurses                   5.9                          10    conda-forge
+numpy                     1.15.0           py36h1b885b7_0  
+numpy-base                1.15.0           py36h3dfced4_0  
+openssl                   1.0.2p               h470a237_0    conda-forge
+pandas                    0.23.4           py36hf8a1672_0    conda-forge
+pip                       18.1                  py36_1000    conda-forge
+pycountry                 18.5.26                    py_0    conda-forge
+pycparser                 2.19                       py_0    conda-forge
+pyopenssl                 18.0.0                   py36_0    conda-forge
+pysocks                   1.6.8                 py36_1002    conda-forge
+python                    3.6.5                         1    conda-forge
+python-dateutil           2.7.3                      py_0    conda-forge
+pytz                      2018.5                     py_0    conda-forge
+readline                  7.0                           0    conda-forge
+requests                  2.19.1                   py36_1    conda-forge
+setuptools                40.4.3                   py36_0    conda-forge
+six                       1.11.0                py36_1001    conda-forge
+sqlite                    3.20.1                        2    conda-forge
+tk                        8.6.8                ha92aebf_0    conda-forge
+urllib3                   1.23                     py36_1    conda-forge
+webencodings              0.5.1                      py_1    conda-forge
+wheel                     0.32.1                   py36_0    conda-forge
+xz                        5.2.4                h470a237_1    conda-forge
+zlib                      1.2.11               h470a237_3    conda-forge
