@@ -54,6 +54,15 @@ Our goals are:
 * to incentivize people in power to sign/follow up on treaties.
 
 
+## Existing solutions/articles discussing the ratification of treaties
+
+* http://indicators.ohchr.org
+* [List of treaties by number of parties (Wikipedia)](https://en.wikipedia.org/wiki/List_of_treaties_by_number_of_parties)
+* [United States Ratification of International Human Rights Treaties (Article by Human Rights Watch)](https://www.hrw.org/news/2009/07/24/united-states-ratification-international-human-rights-treaties)
+* [Human Rights Library (University of Minnesota)](http://hrlibrary.umn.edu/index.html)
+* [an article advocating against the ratification of a treaty by the USA](https://www.heritage.org/global-politics/commentary/7-reasons-us-should-not-ratify-un-convention-the-law-the-sea): interesting to see what arguments are used to justify such position.
+* [Where does the US stand on UN human rights conventions? (Jan.2018)](https://eu.cincinnati.com/story/opinion/contributors/2018/01/03/where-does-us-stand-un-human-rights-conventions/972726001/): something that should easily stand out from any visualization of these (non-) ratifications.
+
 
 ## More Information
 
