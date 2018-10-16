@@ -13,3 +13,11 @@ then activate your conda environment:
 ## Crawling the website hosting the UN Treaties
 
 `python get_data.py`
+
+
+## Download the UN treaties and crawl them offline
+
+`wget -r -l 2 --no-clobber --no-parent https://treaties.un.org/Pages/ParticipationStatus.aspx?clang=_en`
+
+`python get_data.py --files`
+

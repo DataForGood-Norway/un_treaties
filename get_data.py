@@ -1,4 +1,5 @@
 import itertools
+import pathlib
 import re
 import sys
 
@@ -17,6 +18,11 @@ def get_soup(url):
     return bs4.BeautifulSoup(text, 'lxml')
 
 
+def get_soup_from_file(path):
+    text = pathlib.Path(path).read_text()
+    return bs4.BeautifulSoup(text, 'lxml')
+
+
 def links_containing(text):
     def filter(tag):
         return (tag.name == 'a' and
@@ -24,10 +30,9 @@ def links_containing(text):
     return filter
 
 
-def read_header_treaty(url):
+def read_header_treaty(treaty_soup):
     """Read the treaty information before the tables
     containing the ratifications of the countries"""
-    treaty_soup = get_soup(url)
     headerInfos = {}
     fields = dict(
         entryForce='ctl00_ctl00_ContentPlaceHolder1_ContentPlaceHolderInnerPage_rptEIF_ctl00_tcText',
@@ -44,10 +49,9 @@ def read_header_treaty(url):
             headerInfos[field] = re.sub( '\s+', ' ', field_text.text).strip()
     return headerInfos
 
-def make_df(url):
+
+def make_df(treaty_soup):
     """Make a data frame from a treaty URL."""
-    print('parsed URL: ', url)
-    treaty_soup = get_soup(url)
 
     # Parse the table of countries
     def resp_table_div(tag):
@@ -55,10 +59,10 @@ def make_df(url):
                 'table-responsive' in tag.get('class', ''))
     tables = [str(t) for t in treaty_soup.find_all(resp_table_div)]
     for idx, table in enumerate(tables):
-        print('table #{}'.format(idx))
+        # print('table #{}'.format(idx))
         try:
             df = pd.read_html(table, header=[0] if 'thead' in table else None)[0]
-            print(df.columns)
+            # print(df.columns)
         except ValueError:  # Not a table after all
             continue
         if len(df) == 0:
@@ -78,7 +82,6 @@ def make_df(url):
         print('table #{}: Found no Participant-table!'.format(idx))
         return
 
-
     # Some Participant-only tables get interpreted weirdly by pandas
     # Ex: https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=I-4&chapter=1&clang=_en
     if all(df.Participant.isnull()):
@@ -90,8 +93,8 @@ def make_df(url):
     df.Participant = _normalize_country_names(df.Participant)
 
     # Get stuff from the top of the page
-    for field, value in read_header_treaty(url).items():
-        print(field, value)
+    for field, value in read_header_treaty(treaty_soup).items():
+        # print(field, value)
         df[field] = value
 
     # Split PlaceAndDate
@@ -115,7 +118,7 @@ def make_df(url):
             df['ActionType'] = is_date_field[0].title()
 
     # Other useful stuff
-    df['URL'] = url
+    # df['URL'] = url
 
     return df
 
@@ -146,8 +149,9 @@ def iter_treaties():
         treaty_links = chapter_soup(links_containing('Details.aspx'))
         for link in treaty_links:
             treaty_url = BASE + link['href']
+            treaty_soup = get_soup(treaty_url)
             try:
-                yield process(make_df(treaty_url))
+                yield process(make_df(treaty_soup))
             except KeyError as e:   # Page without table
                 print(e)
                 continue
@@ -156,10 +160,26 @@ def iter_treaties():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        url = sys.argv[1]
-        df = make_df(url)
+    if "--files" in sys.argv:
+        BASEPATH = pathlib.Path("treaties.un.org") / "Pages"
+        df_list = list()
+        for i, path in enumerate(sorted(BASEPATH.glob("ViewDetails.aspx*"))):
+            print("-" * 40)
+            print(f"{i:3d} {path}")
+            treaty_soup = get_soup_from_file(path)
+            df = make_df(treaty_soup)
+            df_list.append(df)
+
+        df = pd.concat(df_list)
+        df.to_csv("un_treaties.csv")
+        df.to_json(orient="records", path_or_buf="un_treaties.json")
         import IPython; IPython.embed()
+
+    elif len(sys.argv) > 1:  # Debug single URLs
+        for url in sys.argv[1:]:
+            df = make_df(get_soup(url))
+            import IPython; IPython.embed()
+
     else:
         #  df_list = [df for df in itertools.islice(iter_treaties(), 250) if df is not None]
         #  df_list = [df for df in iter_treaties() if df is not None]
