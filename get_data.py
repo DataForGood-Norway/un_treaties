@@ -103,19 +103,15 @@ def make_df(treaty_soup):
     # Get notes from bottom table
     #   TODO
 
-
-
     # Try to convert date fields
-    date_fields = ['ratification', 'accession', 'signature', 'succesion',
-                   'application', 'adoption', 'registration date']
     for field in df.columns:
         if isinstance(field, int):
             continue
-        is_date_field = [f for f in date_fields if f in field.lower()]
-        if is_date_field:
-            # df[field] = _convert_date(df[field])
-            df['ActionDate'] = _convert_date(df[field])
-            df['ActionType'] = is_date_field[0].title()
+        mapper = _convert_field(field)
+        if mapper:
+            df['ActionDate'], action_type = _convert_date(df[field])
+            df['ActionType'] = action_type.map(mapper).str.title()
+            del df[field]
 
     # Other useful stuff
     # df['URL'] = url
@@ -123,15 +119,26 @@ def make_df(treaty_soup):
     return df
 
 
+def _convert_field(data_s):
+    re_field = re.compile('(ratification|acceptance|accession|signature|succession|application|adoption|registration date|notification)[^,()]*(?:\((\w+)\))?',
+                          flags=re.IGNORECASE)
+    match = re_field.findall(data_s)
+    if match:
+        return dict(reversed(m) for m in match)
+    else:
+        return None
+
+
 def _convert_date(data_s):
-    re_date = re.compile('(\d\d? (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w* \d{4})',
+    re_date = re.compile('(\d\d? (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w* \d{4}) *(\w*)',
                          flags=re.IGNORECASE)
-    data_l = list()
+    date_list, type_list = list(), list()
     for _, row in data_s.iteritems():
         match = re_date.search(str(row))
-        data_l.append(match.group() if match else 'nan')
+        date_list.append(match.groups()[0] if match else 'nan')
+        type_list.append(match.groups()[-1] if match else '')
 
-    return pd.to_datetime(pd.Series(data_l))
+    return pd.to_datetime(pd.Series(date_list)), pd.Series(type_list)
 
 
 def _normalize_country_names(country_list):
