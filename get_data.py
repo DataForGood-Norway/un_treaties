@@ -107,20 +107,21 @@ def make_df(treaty_soup):
     for field in df.columns:
         if isinstance(field, int):
             continue
+        if field.startswith("Signature"):
+            df["Signature"], _ = _convert_date(df[field])
+            del df[field]
+            continue
         mapper = _convert_field(field)
         if mapper:
             df['ActionDate'], action_type = _convert_date(df[field])
             df['ActionType'] = action_type.map(mapper).str.title()
             del df[field]
 
-    # Other useful stuff
-    # df['URL'] = url
-
     return df
 
 
 def _convert_field(data_s):
-    re_field = re.compile('(ratification|acceptance|accession|signature|succession|application|adoption|registration date|notification)[^,()]*(?:\((\w+)\))?',
+    re_field = re.compile('(ratification|acceptance|accession|succession|definitive signature|application|adoption|registration date|notification)[^,()]*(?:\((\w+)\))?',
                           flags=re.IGNORECASE)
     match = re_field.findall(data_s)
     if match:
