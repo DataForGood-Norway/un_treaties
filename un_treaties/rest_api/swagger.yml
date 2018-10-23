@@ -14,7 +14,7 @@ basePath: "/api"
 paths:
   /treaty:
     get:
-      operationId: "treaty.read"
+      operationId: "un_treaties.rest_api.treaty.read"
       tags:
         - "Treaties"
       summary: "The treaty data structure supported by the server application"
@@ -32,7 +32,7 @@ paths:
                   type: "integer"
   /chapter:
     get:
-      operationId: "chapter.read"
+      operationId: "un_treaties.rest_api.chapter.read"
       tags:
         - "Treaties"
       summary: "The chapter data structure supported by the server application"
@@ -48,7 +48,7 @@ paths:
                   type: "integer"
   /country:
     get:
-      operationId: "country.read"
+      operationId: "un_treaties.rest_api.country.read"
       tags:
         - "Treaties"
       summary: "The country data structure supported by the server application"
