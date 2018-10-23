@@ -11,28 +11,28 @@ import pycountry
 
 
 _COUNTRY_MAPPINGS = {
-    'Cape Verde': 'Cabo Verde',
-    'Democratic Republic of the Congo': 'Congo, The Democratic Republic of the',
-    'Holy See': 'Holy See (Vatican City State)',
-    'Libyan Arab Jamahiriya': 'Libya',
-    'Eswatini':'Swaziland',
+    "Cape Verde": "Cabo Verde",
+    "Democratic Republic of the Congo": "Congo, The Democratic Republic of the",
+    "Holy See": "Holy See (Vatican City State)",
+    "Libyan Arab Jamahiriya": "Libya",
+    "Eswatini": "Swaziland",
 }
 
 
 _NON_STATE_PARTICIPANTS = {
-    'world health organization': 'World Health Organization',
-    'european union': 'European Union',
-    'council of europe': 'Council of Europe',
-    'andean community': 'Andean Community',
-    'caribbean community': 'Caribbean Community',
-    'common market for eastern and southern africa': 'Common Market for Eastern and Southern Africa',
-    'east african community': 'East African Community',
-    'economic community of west african states': 'Economic Community of West African States',
-    'eurasian economic community': 'Eurasian Economic Community',
-    'organization of african unity': 'Organization of African Unity',
-    'southern african development community': 'Southern African Development Community',
-    'west african economic and monetary union': 'West African Economic and Monetary Union',
-    'food and agriculture organization of the united nations': 'Food and Agriculture Organization of the UN',
+    "world health organization": "World Health Organization",
+    "european union": "European Union",
+    "council of europe": "Council of Europe",
+    "andean community": "Andean Community",
+    "caribbean community": "Caribbean Community",
+    "common market for eastern and southern africa": "Common Market for Eastern and Southern Africa",
+    "east african community": "East African Community",
+    "economic community of west african states": "Economic Community of West African States",
+    "eurasian economic community": "Eurasian Economic Community",
+    "organization of african unity": "Organization of African Unity",
+    "southern african development community": "Southern African Development Community",
+    "west african economic and monetary union": "West African Economic and Monetary Union",
+    "food and agriculture organization of the united nations": "Food and Agriculture Organization of the UN",
 }
 
 
@@ -46,9 +46,9 @@ def normalize(country):
         pass
 
     # Remove numbers and parentheses
-    country_name = country.replace(' (', ', ').replace('St.', 'Saint')
-    country_name = re.sub(r'[0-9)(\[\]]', '', country_name).strip()
-    while country_name.endswith(','):
+    country_name = country.replace(" (", ", ").replace("St.", "Saint")
+    country_name = re.sub(r"[0-9)(\[\]]", "", country_name).strip()
+    while country_name.endswith(","):
         country_name = country_name[:-1].strip()
     # print(f"{country} -> {country_name}")
     try:
@@ -76,20 +76,22 @@ def normalize(country):
 
     # "While the EU is an observer, it is party to some 50 international UN agreements as the only non-state participant"
     # https://en.wikipedia.org/wiki/United_Nations_General_Assembly_observers#European_Union
-    mapped_country_name = _NON_STATE_PARTICIPANTS.get(country_name.lower(), country_name)
+    mapped_country_name = _NON_STATE_PARTICIPANTS.get(
+        country_name.lower(), country_name
+    )
     # print(f"{country} -> (observer, non-state participant) -> {mapped_country_name} ")
     return mapped_country_name
 
 
 def old_stuff():
-    pattern = re.compile(r'[,0-9)(\[\]]')   # Only keep letters and spaces
+    pattern = re.compile(r"[,0-9)(\[\]]")  # Only keep letters and spaces
     normalized = list()
 
     for country in countries:
         try:
-            country_name = pattern.sub('', country).strip()
+            country_name = pattern.sub("", country).strip()
         except TypeError:
-            normalized.append('No country')
+            normalized.append("No country")
             continue
 
         try:

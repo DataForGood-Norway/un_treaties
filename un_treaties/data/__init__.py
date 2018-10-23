@@ -15,7 +15,9 @@ def _read_dataframe():
     if _DATAFRAME is None:
         csv_path = un_treaties.get_local_path("un_treaties.csv")
         if not csv_path.exists():
-            raise FileNotFoundError("The CSV dataset does not exist. Try to run un_crawl")
+            raise FileNotFoundError(
+                "The CSV dataset does not exist. Try to run un_crawl"
+            )
         _DATAFRAME = pd.read_csv(csv_path)
 
 
@@ -25,7 +27,9 @@ def _read_json():
         json_path = un_treaties.get_local_path("un_treaties.json")
         print(json_path)
         if not json_path.exists():
-            raise FileNotFoundError("The JSON dataset does not exist. Try to run un_crawl")
+            raise FileNotFoundError(
+                "The JSON dataset does not exist. Try to run un_crawl"
+            )
         json_str = json_path.read_text()
         _JSON = json.loads(json_str)
 
