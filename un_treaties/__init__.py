@@ -3,7 +3,7 @@ import pathlib
 import string
 
 # Version of UN Treaties
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # Use importlib.resources
 try:
