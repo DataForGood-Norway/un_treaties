@@ -1,4 +1,3 @@
-import itertools
 import pathlib
 import re
 import sys
@@ -6,15 +5,31 @@ import sys
 import bs4
 import pandas as pd
 import requests
-import countries
-import pycountry
+
+import un_treaties
+from un_treaties.crawler import countries
 
 BASE = 'https://treaties.un.org/Pages/'
 START_PAGE = 'ParticipationStatus.aspx?clang=_en'
 
 
-def get_soup(url):
-    text = requests.get(url).text
+def get_soup(url, cache=False):
+    """Read html from url or cache"""
+    file_name = url.split("/")[-1]
+    file_path = un_treaties.get_local_path(file_name)
+
+    # Try to read from cache
+    if cache:
+        if file_path.exists():
+            text = file_path.read_text()
+        else:
+            return get_soup(url, cache=False)
+
+    # Download from URL and save to cache
+    else:
+        text = requests.get(url).text
+        file_path.write_text(text)
+
     return bs4.BeautifulSoup(text, 'lxml')
 
 
@@ -50,7 +65,7 @@ def read_header_treaty(treaty_soup):
     return headerInfos
 
 
-def make_df(treaty_soup):
+def make_df(treaty_soup, url):
     """Make a data frame from a treaty URL."""
 
     # Parse the table of countries
@@ -79,7 +94,7 @@ def make_df(treaty_soup):
 
     # if no break, do the 'else'
     else:
-        print('table #{}: Found no Participant-table!'.format(idx))
+        print(f'WARN Found no Participant-table at {url}')
         return
 
     # Some Participant-only tables get interpreted weirdly by pandas
@@ -117,6 +132,9 @@ def make_df(treaty_soup):
             df['ActionType'] = action_type.map(mapper).str.title()
             del df[field]
 
+    # Add URL to dataframe
+    df["url"] = url
+
     return df
 
 
@@ -146,66 +164,37 @@ def _normalize_country_names(country_list):
     return pd.Series([countries.normalize(c) for c in country_list])
 
 
-def process(df):
-    return df
-
-
-def iter_treaties():
-    base_soup = get_soup(BASE + START_PAGE)
+def iter_treaties(cache=False):
+    base_soup = get_soup(BASE + START_PAGE, cache=cache)
     for chapter_link in base_soup(links_containing('Treaties.aspx')):
-        chapter_soup = get_soup(BASE + chapter_link['href'])
+        chapter_soup = get_soup(BASE + chapter_link['href'], cache=cache)
         treaty_links = chapter_soup(links_containing('Details.aspx'))
         for link in treaty_links:
             treaty_url = BASE + link['href']
-            treaty_soup = get_soup(treaty_url)
+            treaty_soup = get_soup(treaty_url, cache=cache)
             try:
-                yield process(make_df(treaty_soup))
+                yield make_df(treaty_soup, url=treaty_url)
             except KeyError as e:   # Page without table
                 print(e)
                 continue
-           #except ValueError:   # Page without table
-            #    continue
+
+
+def main():
+    use_cache = "--no-cache" not in sys.argv
+
+    df_list = list()
+    for i, df in enumerate(iter_treaties(use_cache)):
+        if df is not None:
+            print(f"{i:>3} {df.url[0]}")
+            df_list.append(df)
+
+    df = pd.concat(df_list, sort=True)
+    with un_treaties.resources.path("un_treaties.data", "un_treaties.csv") as csv_path:
+        df.to_csv(csv_path)
+
+    with un_treaties.resources.path("un_treaties.data", "un_treaties.json") as json_path:
+        df.to_json(orient='records', path_or_buf=json_path)
 
 
 if __name__ == '__main__':
-    if "--files" in sys.argv:
-        BASEPATH = pathlib.Path("treaties.un.org") / "Pages"
-        df_list = list()
-        for i, path in enumerate(sorted(BASEPATH.glob("ViewDetails.aspx*"))):
-            print("-" * 40)
-            print(f"{i:3d} {path}")
-            treaty_soup = get_soup_from_file(path)
-            df = make_df(treaty_soup)
-            df_list.append(df)
-
-        df = pd.concat(df_list)
-        df.to_csv("un_treaties.csv")
-        df.to_json(orient="records", path_or_buf="un_treaties.json")
-        import IPython; IPython.embed()
-
-    elif len(sys.argv) > 1:  # Debug single URLs
-        for url in sys.argv[1:]:
-            df = make_df(get_soup(url))
-            import IPython; IPython.embed()
-
-    else:
-        #  df_list = [df for df in itertools.islice(iter_treaties(), 250) if df is not None]
-        #  df_list = [df for df in iter_treaties() if df is not None]
-
-        df_list = list()
-        for i, df in enumerate(iter_treaties()):
-            print("-"*40)
-            print(i)
-            if df is not None:
-                df_list.append(df)
-
-            if not i % 10:
-                print('Saving!')
-                df = pd.concat(df_list)
-                df.to_csv(f'un_treaties_{i:04d}.csv')
-                df.to_json(orient='records', path_or_buf=f'un_treaties_{i:04d}.json')
-
-        df = pd.concat(df_list)
-        df.to_csv('un_treaties.csv')
-        df.to_json(orient='records', path_or_buf='un_treaties.json')
-        import IPython; IPython.embed()
+    main()
