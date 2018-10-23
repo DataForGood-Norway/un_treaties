@@ -1,1 +1,2 @@
 include un_treaties/rest_api/swagger.yml
+include un_treaties/rest_api/templates/*
