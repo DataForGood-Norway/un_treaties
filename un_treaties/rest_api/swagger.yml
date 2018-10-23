@@ -1,0 +1,64 @@
+swagger: "2.0"
+info:
+  description: This is an API about United Nations Treaties
+  version: "1.0.0"
+  title: The United Nations Treaties REST API
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+basePath: "/api"
+
+# Paths supported by the server application
+paths:
+  /treaty:
+    get:
+      operationId: "treaty.read"
+      tags:
+        - "Treaties"
+      summary: "The treaty data structure supported by the server application"
+      description: "Read the list of treaties"
+      responses:
+        200:
+          description: "Successful read treaty list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                number_chapter:
+                  type: "integer"
+                number_treaty:
+                  type: "integer"
+  /chapter:
+    get:
+      operationId: "chapter.read"
+      tags:
+        - "Treaties"
+      summary: "The chapter data structure supported by the server application"
+      description: "Read the list of chapters"
+      responses:
+        200:
+          description: "Successful read chapter list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                number_chapter:
+                  type: "integer"
+  /country:
+    get:
+      operationId: "country.read"
+      tags:
+        - "Treaties"
+      summary: "The country data structure supported by the server application"
+      description: "Read the list of countries"
+      responses:
+        200:
+          description: "Successful read country list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                name:
+                  type: "string"
