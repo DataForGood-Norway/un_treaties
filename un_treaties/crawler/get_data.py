@@ -186,11 +186,11 @@ def main():
             df_list.append(df)
 
     df = pd.concat(df_list, sort=True)
-    with un_treaties.resources.path("un_treaties.data", "un_treaties.csv") as csv_path:
-        df.to_csv(csv_path)
+    csv_path = un_treaties.get_local_path("un_treaties.csv")
+    df.to_csv(csv_path)
 
-    with un_treaties.resources.path("un_treaties.data", "un_treaties.json") as json_path:
-        df.to_json(orient='records', path_or_buf=json_path)
+    json_path = un_treaties.get_local_path("un_treaties.json")
+    df.to_json(orient='records', path_or_buf=json_path)
 
 
 if __name__ == '__main__':

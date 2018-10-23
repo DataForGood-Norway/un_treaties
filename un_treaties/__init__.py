@@ -14,7 +14,7 @@ except ImportError:
 
 def get_local_path(file_name):
     """Get a path to a local file"""
-    safe_chars = string.ascii_letters + string.digits + "."
+    safe_chars = string.ascii_letters + string.digits + "_."
     safe_name = "".join(l if l in safe_chars else "-" for l in file_name)
     local_dir = pathlib.Path.home() / f".{__name__}"
     local_dir.mkdir(exist_ok=True)
