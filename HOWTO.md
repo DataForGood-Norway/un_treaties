@@ -2,28 +2,38 @@
 
 ## Requirements
 
-You can rebuild the necessary Python environment using `conda`:
+It's nice to run inside an environment. If you use conda you can for instance do:
 
-`conda env create --file un-py36.txt`
+```shell
+$ conda create -n un_treaties python
+$ conda activate un_treaties
+```
 
-then activate your conda environment:
+## Installation
 
-`conda activate un-py36`
+Install the package:
+
+```
+$ python -m pip install -e .
+```
+
+Using `-e` installs the package in editable mode, which is nice for development.
+
 
 ## Crawling the website hosting the UN Treaties
 
-`python get_data.py`
-
-
-### Download the UN treaties and crawl them offline lightning fast!!!
-
-If this seems too slow...
+Use the command
 
 ```shell
-cd crawler
-wget -r -l 2 --no-clobber --no-parent https://treaties.un.org/Pages/ParticipationStatus.aspx?clang=_en
-python get_data.py --files
+$ un_crawl
 ```
+
+This will crawl the UN Treaties web site and cache the files it downloads
+locally in a `un_treaties` directory inside your home directory.
+
+If you need to refresh the cache you can run it with:
+
+`un_crawl --no-cache`
 
 
 ## Start the API locally to interact with the data through HTTP request
@@ -31,8 +41,7 @@ python get_data.py --files
 This API uses Swagger which makes very intuitive REST API, documented and including data validation.
 
 ```shell
-cd rest_api
-python api.py
+$ un_serve
 ```
 
 then simply open the link it will generate: [http://localhost:5000](http://localhost:5000) or better, open the UI [http://localhost:5000](http://localhost:5000/api/ui)
