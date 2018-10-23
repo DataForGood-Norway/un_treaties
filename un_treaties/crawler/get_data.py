@@ -95,7 +95,7 @@ def make_df(treaty_soup, url):
     # if no break, do the 'else'
     else:
         print(f'WARN Found no Participant-table at {url}')
-        return
+        return None, url
 
     # Some Participant-only tables get interpreted weirdly by pandas
     # Ex: https://treaties.un.org/Pages/ViewDetails.aspx?src=TREATY&mtdsg_no=I-4&chapter=1&clang=_en
@@ -132,10 +132,7 @@ def make_df(treaty_soup, url):
             df['ActionType'] = action_type.map(mapper).str.title()
             del df[field]
 
-    # Add URL to dataframe
-    df["url"] = url
-
-    return df
+    return df, url
 
 
 def _convert_field(data_s):
@@ -183,9 +180,9 @@ def main():
     use_cache = "--no-cache" not in sys.argv
 
     df_list = list()
-    for i, df in enumerate(iter_treaties(use_cache)):
+    for i, (df, url) in enumerate(iter_treaties(use_cache)):
         if df is not None:
-            print(f"{i:>3} {df.url[0]}")
+            print(f"{i:>3} {url}")
             df_list.append(df)
 
     df = pd.concat(df_list, sort=True)
