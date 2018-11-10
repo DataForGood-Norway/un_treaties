@@ -12,7 +12,58 @@ basePath: "/api"
 
 # Paths supported by the server application
 paths:
-  /treaty:
+
+  /chapters:
+    get:
+      operationId: "un_treaties.rest_api.chapter.read"
+      tags:
+        - "Chapters"
+      summary: "Chapter is a collection of treaties with the same goal (e.g. 'Human Rights' or 'Law of the Sea')"
+      description: "Read the list of chapters"
+      responses:
+        200:
+          description: "Successful read chapter list operation"
+          schema:
+            type: "array"
+            items:
+              properties:
+                number_chapter:
+                  type: "integer"
+
+
+  # /users/{id}:
+  #   get:
+  #     operationId: "un_treaties.rest_api.chapter.read_by_id"
+  #     parameters:
+  #       - in: path
+  #         name: id   # Note the name is the same as in the path
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           minimum: 1
+  #         description: The user ID
+
+  # /chapters/{id}:
+  #   get:
+  #     operationId: "un_treaties.rest_api.chapter.read_by_id"
+  #     tags:
+  #       - "Chapters"
+  #     summary: "Chapter is a collection of treaties with the same goal (e.g. 'Human Rights' or 'Law of the Sea')"
+  #     description: "Read the infos of a given chapter"
+  #     parameters:
+  #       - in: path
+  #         name: id
+  #         required: true
+  #         schema:
+  #           type: integer
+  #           minimum: 1
+  #     responses:
+  #       200:
+  #         description: "Successful read chapter list operation"
+
+
+
+  /treaties:
     get:
       operationId: "un_treaties.rest_api.treaty.read"
       tags:
@@ -30,27 +81,12 @@ paths:
                   type: "integer"
                 number_treaty:
                   type: "integer"
-  /chapter:
-    get:
-      operationId: "un_treaties.rest_api.chapter.read"
-      tags:
-        - "Treaties"
-      summary: "The chapter data structure supported by the server application"
-      description: "Read the list of chapters"
-      responses:
-        200:
-          description: "Successful read chapter list operation"
-          schema:
-            type: "array"
-            items:
-              properties:
-                number_chapter:
-                  type: "integer"
-  /country:
+
+  /countries:
     get:
       operationId: "un_treaties.rest_api.country.read"
       tags:
-        - "Treaties"
+        - "Countries"
       summary: "The country data structure supported by the server application"
       description: "Read the list of countries"
       responses:

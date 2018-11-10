@@ -1,0 +1,322 @@
+swagger: "2.0"
+info:
+  description: "This is an API about United Nations Treaties."
+  version: "1.0.0"
+  title: "The United Nations Treaties REST API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "team@dataforgod.no"
+  license:
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+host: "un-treaties.herokuapp.com"
+basePath: "/v2"
+tags:
+- name: "chapters"
+  description: "Chapters are collections of treaties organized by subject-matter."
+  externalDocs:
+    description: "Find out more"
+    url: "https://treaties.un.org/pages/Content.aspx?path=DB/MTDSGStatus/pageIntro_en.xml"
+- name: "treaties"
+  description: "Presently over 560 treaties deposited with the Secretary-General of the United Nations."
+  externalDocs:
+    description: "Find out more about the treaties"
+    url: "https://treaties.un.org/pages/ParticipationStatus.aspx?clang=_en"  
+- name: "participants"
+  description: "Participants can denote state or non-state parties (such as the EU) that are party to the treaty."
+  externalDocs:
+    description: "Find out more about the participants"
+    url: "https://en.wikipedia.org/wiki/List_of_treaties_by_number_of_parties"
+- name: "signatures"
+  description: "Signature constitutes a preliminary endorsement of the Convention or Protocol. Signing the instrument does not create a binding legal obligation but does demonstrate the State’s intent to examine the treaty domestically and consider ratifying it."
+  externalDocs:
+    description: "Find out more about the signatures"
+    url: "https://github.com/DataForGood-Norway/un_treaties/blob/master/DEFINITIONS.md#signature"
+- name: "ratifications"
+  description: "Ratification, like accession signifies an agreement to be legally bound by the terms of the Convention"
+  externalDocs:
+    description: "Find out more about the ratifications"
+    url: "https://github.com/DataForGood-Norway/un_treaties/blob/master/DEFINITIONS.md#consent-of-a-state-to-be-bound-by-a-treaty"    
+schemes:
+- "https"
+- "http"
+paths:
+  /treaties/findByStatus:
+    get:
+      tags:
+      - "treaties"
+      summary: "Finds treaties by status"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "findTreatiesByStatus"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "signed"
+          - "ratified"
+          - "withdrawn"
+          default: "available"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Treaty"
+        400:
+          description: "Invalid status value"
+  /treaties/findByTags:
+    get:
+      tags:
+      - "treaties"
+      summary: "Finds treaties by tags"
+      description: "Muliple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing."
+      operationId: "findTreatiesByTags"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "tags"
+        in: "query"
+        description: "Tags to filter by"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Treaty"
+        400:
+          description: "Invalid tag value"
+      deprecated: true
+  /treaties/{treatyId}:
+    get:
+      tags:
+      - "treaties"
+      summary: "Find a treaty by ID"
+      description: "Returns a single treaty"
+      operationId: "getTreatyById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "treatyId"
+        in: "path"
+        description: "ID of treaty to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Treaty"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Treaty not found"
+  /chapters/collection:
+    get:
+      tags:
+      - "chapters"
+      summary: "Returns the treaty collection"
+      description: "Returns a list of treaties"
+      operationId: "getCollection"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+  /chapters/:
+    get:
+      tags:
+      - "chapters"
+      summary: "Get the list of chapters"
+      description: "Chapters are returned as an object by name and some properties."
+      operationId: "getChapters"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Chapter"
+  /participants:
+    get:
+      tags:
+      - "participants"
+      summary: "Get the total list of participants"
+      description: "Participants are returned as an object. (Present in the treaties, or not)"
+      operationId: "getParticipants"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Participant"
+  /participants/regions:
+    get:
+      tags:
+      - "participants"
+      summary: "Returns participants by world's regions"
+      description: ""
+      operationId: "participantsRegions"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+  /participants/{name}:
+    get:
+      tags:
+      - "participants"
+      summary: "Get participant by participant's name"
+      description: ""
+      operationId: "getParticipantByName"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "The name of the participant that needs to be fetched."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Participant"
+        400:
+          description: "Invalid name of participant supplied"
+        404:
+          description: "Participant not found"
+definitions:
+  Treaty:
+    type: "object"
+    required:
+    - "name"
+    - "chapter"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        example: "Convention on the Rights of Persons with Disabilities"
+      chapter:
+        $ref: "#/definitions/Chapter"
+      tags:
+        type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Tag"
+      participants:
+        type: "array"
+        xml:
+          name: "participant"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Participant"
+      status:
+        type: "string"
+        description: "status of a treaty"
+        enum:
+        - "pending"
+        - "entered into force"
+    xml:
+      name: "Treaty"
+  Participant:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      region:
+        $ref: "#/definitions/Region"
+      treaties:
+        type: "array"
+        xml:
+          name: "treaty"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Treaty"
+    xml:
+      name: "Participant"
+  Region:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Region"
+  Tag:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    xml:
+      name: "Tag"
+  Chapter:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      treaties:
+        type: "array"
+        xml:
+          name: "treaty"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Treaty"
+    xml:
+      name: "Chapter"      
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
