@@ -1,0 +1,722 @@
+---
+swagger: "2.0"
+info:
+  description: "This is an API about United Nations Treaties."
+  version: "1.0.0"
+  title: "The United Nations Treaties REST API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "team@dataforgood.no"
+  license:
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+host: "un-treaties.herokuapp.com"
+basePath: "/api"
+tags:
+- name: "chapters"
+  description: "Chapters are collections of treaties organized by subject-matter."
+  externalDocs:
+    description: "Find out more"
+    url: "https://treaties.un.org/pages/Content.aspx?path=DB/MTDSGStatus/pageIntro_en.xml"
+- name: "treaties"
+  description: "Presently over 560 treaties deposited with the Secretary-General of\
+    \ the United Nations."
+  externalDocs:
+    description: "Find out more about the treaties"
+    url: "https://treaties.un.org/pages/ParticipationStatus.aspx?clang=_en"
+- name: "participants"
+  description: "Participants can denote state or non-state parties (such as the EU)\
+    \ that are party to the treaty."
+  externalDocs:
+    description: "Find out more about the participants"
+    url: "https://en.wikipedia.org/wiki/List_of_treaties_by_number_of_parties"
+- name: "signatures"
+  description: "Signature constitutes a preliminary endorsement of the Convention\
+    \ or Protocol. Signing the instrument does not create a binding legal obligation\
+    \ but does demonstrate the State’s intent to examine the treaty domestically and\
+    \ consider ratifying it."
+  externalDocs:
+    description: "Find out more about the signatures"
+    url: "https://github.com/DataForGood-Norway/un_treaties/blob/master/DEFINITIONS.md#signature"
+- name: "ratifications"
+  description: "Ratification, like accession signifies an agreement to be legally\
+    \ bound by the terms of the Convention"
+  externalDocs:
+    description: "Find out more about the ratifications"
+    url: "https://github.com/DataForGood-Norway/un_treaties/blob/master/DEFINITIONS.md#consent-of-a-state-to-be-bound-by-a-treaty"
+schemes:
+- "https"
+- "http"
+paths:
+  /treaties:
+    get:
+      tags:
+      - "treaties"
+      summary: "Get the list of treaties"
+      description: "Treaties are returned as an object by name and some properties."
+      operationId: "get_treaties"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Treaty"
+      x-swagger-router-controller: "swagger_server.controllers.treaties_controller"
+  /treaties/findByStatus:
+    get:
+      tags:
+      - "treaties"
+      summary: "Finds treaties by status"
+      description: "Multiple status values can be provided with comma separated strings"
+      operationId: "find_treaties_by_status"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "Status values that need to be considered for filter"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          default: "available"
+          enum:
+          - "signed"
+          - "ratified"
+          - "withdrawn"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Treaty"
+        400:
+          description: "Invalid status value"
+      x-swagger-router-controller: "swagger_server.controllers.treaties_controller"
+  /treaties/findByTags:
+    get:
+      tags:
+      - "treaties"
+      summary: "Finds treaties by tags"
+      description: "Muliple tags can be provided with comma separated strings. Use\
+        \ tag1, tag2, tag3 for testing."
+      operationId: "find_treaties_by_tags"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "tags"
+        in: "query"
+        description: "Tags to filter by"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Treaty"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.treaties_controller"
+  /treaties/{treatyId}:
+    get:
+      tags:
+      - "treaties"
+      summary: "Find a treaty by Id"
+      description: "Returns a single treaty"
+      operationId: "get_treaty_by_id"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "treatyId"
+        in: "path"
+        description: "Id of treaty to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Treaty"
+        400:
+          description: "Invalid Id supplied"
+        404:
+          description: "Treaty not found"
+      x-swagger-router-controller: "swagger_server.controllers.treaties_controller"
+  /ratifications/treatyId/{treatyId}:
+    get:
+      tags:
+      - "ratifications"
+      summary: "Find ratifications for a given treaty"
+      description: "Returns a list of ratifications signed for a given treaty."
+      operationId: "get_ratifications_by_treaty_id"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "treatyId"
+        in: "path"
+        description: "Id of treaty to return ratifications from."
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Ratification"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Ratifications not found"
+      x-swagger-router-controller: "swagger_server.controllers.ratifications_controller"
+  /ratifications/participantId/{participantId}:
+    get:
+      tags:
+      - "ratifications"
+      summary: "Find ratifications for a given participant"
+      description: "Returns a list of ratifications signed for by a given participants."
+      operationId: "get_ratifications_by_participant_id"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "participantId"
+        in: "path"
+        description: "Id of participant to return ratifications from."
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Ratification"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Ratifications not found"
+      x-swagger-router-controller: "swagger_server.controllers.ratifications_controller"
+  /signatures/treatyId/{treatyId}:
+    get:
+      tags:
+      - "signatures"
+      summary: "Find signatures for a given treaty"
+      description: "Returns a list of signatures signed for a given treaty."
+      operationId: "get_signatures_by_treaty_id"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "treatyId"
+        in: "path"
+        description: "Id of treaty to return signatures from."
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Signature"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Signatures not found"
+      x-swagger-router-controller: "swagger_server.controllers.signatures_controller"
+  /signatures/participantId/{participantId}:
+    get:
+      tags:
+      - "signatures"
+      summary: "Find signatures for a given participant"
+      description: "Returns a list of signatures signed for by a given participants."
+      operationId: "get_signatures_by_participant_id"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "participantId"
+        in: "path"
+        description: "Id of participant to return signatures from."
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Signature"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Signatures not found"
+      x-swagger-router-controller: "swagger_server.controllers.signatures_controller"
+  /chapters/{chapterId}:
+    get:
+      tags:
+      - "chapters"
+      summary: "Find a chapter by Id"
+      description: "Returns a single chapter"
+      operationId: "get_chapter_by_id"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "chapterId"
+        in: "path"
+        description: "Id of chapter to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Chapter"
+        400:
+          description: "Invalid Id supplied"
+        404:
+          description: "Chapter not found"
+      x-swagger-router-controller: "swagger_server.controllers.chapters_controller"
+  /chapters:
+    get:
+      tags:
+      - "chapters"
+      summary: "Get the list of chapters"
+      description: "Chapters are returned as an object by name and some properties."
+      operationId: "get_chapters"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Chapter"
+      x-swagger-router-controller: "swagger_server.controllers.chapters_controller"
+  /chapters/findByTags:
+    get:
+      tags:
+      - "chapters"
+      summary: "Finds chapters by tags"
+      description: "Muliple tags can be provided with comma separated strings. Use\
+        \ tag1, tag2, tag3 for testing."
+      operationId: "find_chapters_by_tags"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "tags"
+        in: "query"
+        description: "Tags to filter by"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Chapter"
+        400:
+          description: "Invalid tag value"
+      x-swagger-router-controller: "swagger_server.controllers.chapters_controller"
+  /tags:
+    get:
+      tags:
+      - "tags"
+      summary: "Get the whole list of tags"
+      description: "Tags are returned as an object."
+      operationId: "get_tags"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Tag"
+      x-swagger-router-controller: "swagger_server.controllers.tags_controller"
+  /regions:
+    get:
+      tags:
+      - "regions"
+      summary: "Get the whole list of regions"
+      description: "Regions are returned as an object."
+      operationId: "get_regions"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Region"
+      x-swagger-router-controller: "swagger_server.controllers.regions_controller"
+  /participants:
+    get:
+      tags:
+      - "participants"
+      summary: "Get the total list of participants"
+      description: "Participants are returned as an object. (Present in the treaties,\
+        \ or not)"
+      operationId: "get_participants"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Participant"
+      x-swagger-router-controller: "swagger_server.controllers.participants_controller"
+  /participants/regions:
+    get:
+      tags:
+      - "participants"
+      summary: "Returns participants by world's regions"
+      description: ""
+      operationId: "participants_regions"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties: {}
+      x-swagger-router-controller: "swagger_server.controllers.participants_controller"
+  /participants/name/{name}:
+    get:
+      tags:
+      - "participants"
+      summary: "Get participant by participant's name"
+      description: "Returns a single participants"
+      operationId: "get_participant_by_name"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "name"
+        in: "path"
+        description: "The name of the participant that needs to be fetched."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Participant"
+        400:
+          description: "Invalid name of participant supplied"
+        404:
+          description: "Participant not found"
+      x-swagger-router-controller: "swagger_server.controllers.participants_controller"
+  /participants/{participantId}:
+    get:
+      tags:
+      - "participants"
+      summary: "Find a participants by Id"
+      description: "Returns a single participant"
+      operationId: "get_participant_by_id"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "participantId"
+        in: "path"
+        description: "Id of participant to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Participant"
+        400:
+          description: "Invalid Id supplied"
+        404:
+          description: "Participant not found"
+      x-swagger-router-controller: "swagger_server.controllers.participants_controller"
+definitions:
+  Treaty:
+    type: "object"
+    required:
+    - "chapterId"
+    - "id"
+    - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        example: "Convention on the Rights of Persons with Disabilities"
+      chapterId:
+        type: "integer"
+        format: "int64"
+      tags:
+        type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Tag"
+      participants:
+        type: "array"
+        xml:
+          name: "participant"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Participant"
+      status:
+        type: "string"
+        description: "status of a treaty"
+        enum:
+        - "pending"
+        - "entered into force"
+    example:
+      chapterId: "chapter"
+      name: "Convention on the Rights of Persons with Disabilities"
+      id: 0
+      tags:
+      - name: "name"
+        id: 6
+      - name: "name"
+        id: 6
+      participants:
+      - name: "name"
+        id: 1
+        region:
+          name: "name"
+          id: 5
+      - name: "name"
+        id: 1
+        region:
+          name: "name"
+          id: 5
+      status: "pending"
+    xml:
+      name: "Treaty"
+  Signature:
+    type: "object"
+    required:
+    - "date"
+    - "id"
+    - "participantId"
+    - "treatyId"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      date:
+        type: "string"
+        format: "date"
+        example: "1961-01-23"
+      treatyId:
+        type: "integer"
+        format: "int64"
+      participantId:
+        type: "integer"
+        format: "int64"
+    example:
+      date: "1961-01-23"
+      participantId: 1
+      id: 0
+      treatyId: 6
+    xml:
+      name: "Signature"
+  Ratification:
+    type: "object"
+    required:
+    - "date"
+    - "id"
+    - "participantId"
+    - "treatyId"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      date:
+        type: "string"
+        format: "date"
+        example: "1961-01-23"
+      treatyId:
+        type: "integer"
+        format: "int64"
+      participantId:
+        type: "integer"
+        format: "int64"
+    example:
+      date: "1961-01-23"
+      participantId: 1
+      id: 0
+      treatyId: 6
+    xml:
+      name: "Ratification"
+  Participant:
+    type: "object"
+    required:
+    - "id"
+    - "name"
+    - "region"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      region:
+        $ref: "#/definitions/Region"
+    example:
+      name: "Norway"
+      id: 1
+      region:
+        name: "Europe"
+        id: 5
+    xml:
+      name: "Participant"
+  Region:
+    type: "object"
+    required:
+    - "id"
+    - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    example:
+      name: "Europe"
+      id: 5
+    xml:
+      name: "Region"
+  Tag:
+    type: "object"
+    required:
+    - "id"
+    - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    example:
+      name: "name"
+      id: 6
+    xml:
+      name: "Tag"
+  Chapter:
+    type: "object"
+    required:
+    - "id"
+    - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      treaties:
+        type: "array"
+        xml:
+          name: "treaty"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Treaty"
+      tags:
+        type: "array"
+        xml:
+          name: "tag"
+          wrapped: true
+        items:
+          $ref: "#/definitions/Tag"
+    example:
+      name: "HUMAN RIGHTS"
+      treaties:
+      - chapter: "HUMAN RIGHTS"
+        name: "Convention on the Prevention and Punishment of the Crime of Genocide"
+        id: 1
+        tags:
+        - name: "name"
+          id: 6
+        - name: "name"
+          id: 6
+        participants:
+        - name: "Afghanistan"
+          id: 1
+          region:
+            name: "Asia"
+            id: 6
+        - name: "Albania"
+          id: 1
+          region:
+            name: "Europe"
+            id: 5
+        status: "pending"
+      - chapter: "HUMAN RIGHTS"
+        name: "Convention on the Rights of Persons with Disabilities"
+        id: 15
+        participants:
+        - name: "Afghanistan"
+          id: 1
+          region:
+            name: "Asia"
+            id: 6
+        - name: "Albania"
+          id: 1
+          region:
+            name: "Europe"
+            id: 5
+        status: "Entered into force"
+      id: 4
+    xml:
+      name: "Chapter"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
