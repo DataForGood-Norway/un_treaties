@@ -1,11 +1,21 @@
+language: python
+
+branches:
+  only:
+    - master
+
+python:
+- 3.6
+
+install:
+- pip install codecov
+- python -m pip install -e .
+
+script:
+- un_serve
+
 deploy:
-  provider: heroku
+  - provider: heroku
   api_key:
     secure: IWGk+Fxxfl+rk8TleCnZKIdMGhm0CoSREB3qe/uH2HPRaECl000m+v8zcGd1A3qTP5tP3dJdBY/0YZHFJx0sp9V6qXdS+ZFkX884wgXnATyMoxIKiwvOFC7jyNBlZmyUd+7SGozDZZuln1DBJ8iGEftp+7HEqH5U1WSLVZ5xHZ4CmNCiLeqBECEl0tnWGpQ0tZKPXZsCZJoJLolRdle8rjjlDzEfpL1WN3GGhThrPPz4OAb5P9Hha3zcwpBd3HjSYWKo+6HiCvxmcpotVMgNdpTf5eAAMMk3j+DxiP1a+FaI9DKdQlPr6FiJJ7vXV5raHtSkBp+Kz6onhDAjdvoFlzTBwXJMRUa1E78mxuAKeMXejOEvxWYg9dqGAWKRKrDsPtOmNlrfcdwwqc5armUsEp2PkqVicv88elaGzxiFhghUwE3C5wogxHLnM5pnxXuk7euPCINZpfU9fn5bXIxVnUheOdZedUABwj29n7iHBBWKFqLKEQCcr3+BWrHomwm35pxuZbvBHprN5ym/BrzdtlN9fd/n8sPz2HUQSpHgnZYRKIPDBUojw19L1QkeV+2cMgfrv/PaoHHfLkA27WXaSzjP+rzZ6PHoafJlu5xXIB99AZwNBXPgIpeOpqwGWlgNQfMnDOsmcksu/oU8eS5PYdbdiKsZL+8YCvGsIWGl/Ok=
-  app:
-    master: UN_treaties
-    dev: UN_treaties_dev
-  run:
-    - "python -m pip install -e ."
-    - "un_crawl --no-cache"
-    - "un_serve"
+  app: un_treaties
